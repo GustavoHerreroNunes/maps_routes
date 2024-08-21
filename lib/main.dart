@@ -13,11 +13,15 @@ void main() {
 class MapsRouteApp extends StatelessWidget {
   const MapsRouteApp({super.key});
 
+  static final GlobalKey<NavigatorState> navigatorKey = 
+    GlobalKey<NavigatorState>();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Maps Route App',
+      navigatorKey: navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)
       ),
