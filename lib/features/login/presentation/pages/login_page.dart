@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maps_route_app/constants/routes_const.dart';
+import 'package:maps_route_app/features/widgets/default_button.dart';
 import 'package:maps_route_app/features/widgets/default_text_field_widget.dart';
 import 'dart:html';
 
@@ -61,8 +62,8 @@ class _LoginPageState extends State<LoginPage> {
       _txbEmail(_txbEmailController),
       _txbPass(_txbPassController), 
       const Spacer(),
-      _btnSubmit(context),
-      _btnCancel(context)
+      _btnSubmit(),
+      _btnCancel()
     ];
     
     return Scaffold(
@@ -71,6 +72,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Form(
           key: _frmLoginKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: _loginElements
           )
         )
@@ -92,41 +94,19 @@ class _LoginPageState extends State<LoginPage> {
     return DefaultTextField(label, inputType, controller);
   }
 
-  Widget _btnSubmit(BuildContext context) {
-    final theme = Theme.of(context);
+  Widget _btnSubmit() {
+    void onPressed () {
+      window.console.info('[btnSubmit] pressed');
+    }
     
-    return TextButton(
-      onPressed: () {
-        window.console.info("[btnSubmit] clicked");
-      },
-      style: TextButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
-        minimumSize: const Size(double.infinity, 40)
-      ),
-
-      child: const Text("Salvar") 
-    );
+    return DefaultButton("Entrar", ButtonStyleType.primary, onPressed);
   }
 
-  Widget _btnCancel(BuildContext context) {
-    final theme = Theme.of(context);
+  Widget _btnCancel() {
+    void onPressed () {
+      window.console.info('[btnCacel] pressed');
+    }
     
-    return OutlinedButton(
-      onPressed: () {
-        window.console.info("[btnCancel] clicked");
-      },
-      style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.blue,
-        backgroundColor: Colors.transparent,
-        side: const BorderSide(
-          color: Colors.blue,
-          width: 1.2
-        ),
-        minimumSize: const Size(double.infinity, 40)
-      ),
-
-      child: const Text("Cancelar") 
-    );
+    return DefaultButton("Cancelar", ButtonStyleType.secondary, onPressed);
   }
 }
