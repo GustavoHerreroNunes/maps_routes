@@ -34,19 +34,28 @@ class _DefaultTextFieldState extends State<DefaultTextField>{
   
   @override
   Widget build(BuildContext context) => (
-    TextFormField(
-      keyboardType: widget.inputType == InputType.number
-        ? TextInputType.number
-        : TextInputType.text,
-      controller: widget.controller,
-      obscureText: widget.inputType == InputType.password 
-        ? !_isPasswordVisible 
-        : false,
-      decoration: InputDecoration(
-        labelText: widget.label,
-
-        suffixIcon: _textFieldIcon()
-      ),
+    Padding(
+      padding: const EdgeInsets.all(8),
+      child: TextFormField(
+        keyboardType: widget.inputType == InputType.number
+          ? TextInputType.number
+          : TextInputType.text,
+        controller: widget.controller,
+        obscureText: widget.inputType == InputType.password 
+          ? !_isPasswordVisible 
+          : false,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          border: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color:Colors.black54,
+              style: BorderStyle.solid,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          suffixIcon: _textFieldIcon()
+        ),
+      )
     )
   );
 
