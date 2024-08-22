@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       const Text(
         "Bem-vindo!",
         style: TextStyle(
-          fontSize: 25,
+          fontSize: 35,
           fontWeight: FontWeight.w600,
         ),
         textDirection: TextDirection.ltr,
@@ -67,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
     ];
     
     return Scaffold(
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
