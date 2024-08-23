@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:maps_route_app/constants/routes_const.dart';
 import 'package:maps_route_app/features/widgets/default_button.dart';
 import 'package:maps_route_app/features/widgets/default_text_field_widget.dart';
-import 'dart:html';
 
 import 'package:maps_route_app/main.dart';
 
@@ -17,26 +18,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final _txbBirthdayController = TextEditingController();
   final _txbEmailController = TextEditingController();
   final _txbPassController = TextEditingController();
-  
-  @override void initState() {
-    super.initState();
-
-    _txbUsernameController.addListener(() {
-      window.console.info("[_txbUsername]: ${_txbUsernameController.text}");
-    });
-
-    _txbBirthdayController.addListener(() {
-      window.console.info("[_txbBirthday]: ${_txbBirthdayController.text}");
-    });
-
-    _txbEmailController.addListener(() {
-      window.console.info("[_txbEmail]: ${_txbEmailController.text}");
-    });
-
-    _txbPassController.addListener(() {
-      window.console.info("[_txbPass]: ${_txbPassController.text}");
-    });
-  }
+  final FirebaseAuth _auth = FirebaseAuth.instance;  // Instância do FirebaseAuth
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();  // Referência do Firebase Realtime Database
 
   @override
   void dispose() {
@@ -44,10 +27,9 @@ class _SignUpPageState extends State<SignUpPage> {
     _txbBirthdayController.dispose();
     _txbEmailController.dispose();
     _txbPassController.dispose();
-
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     List<Widget> _signupElements = [
@@ -74,11 +56,11 @@ class _SignUpPageState extends State<SignUpPage> {
       _txbUsername(_txbUsernameController),
       _txbBirthday(_txbBirthdayController),
       _txbEmail(_txbEmailController),
-      _txbPass(_txbPassController), 
+      _txbPass(_txbPassController),
       const Spacer(),
       _btnSubmit(),
     ];
-    
+
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -87,35 +69,35 @@ class _SignUpPageState extends State<SignUpPage> {
           key: _frmSignUpKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: _signupElements
-          )
-        )
-      )
-  );
+            children: _signupElements,
+          ),
+        ),
+      ),
+    );
   }
 
-  Widget _txbUsername(dynamic controller){
+  Widget _txbUsername(dynamic controller) {
     const String label = "Username";
     const InputType inputType = InputType.text;
 
     return DefaultTextField(label, inputType, controller);
   }
 
-  Widget _txbBirthday(dynamic controller){
+  Widget _txbBirthday(dynamic controller) {
     const String label = "Data de Nascimento";
     const InputType inputType = InputType.text;
 
     return DefaultTextField(label, inputType, controller);
   }
 
-  Widget _txbEmail(dynamic controller){
+  Widget _txbEmail(dynamic controller) {
     const String label = "Email";
     const InputType inputType = InputType.text;
 
     return DefaultTextField(label, inputType, controller);
   }
 
-  Widget _txbPass(dynamic controller){
+  Widget _txbPass(dynamic controller) {
     const String label = "Senha";
     const InputType inputType = InputType.password;
 
@@ -123,13 +105,38 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _btnSubmit() {
-    void onPressed () {
-      window.console.info('[btnSubmit] pressed');
-      window.console.info('Moving to \'/maps-route\'');
-      MapsRouteApp.navigatorKey.currentState
-        ?.pushReplacementNamed(RoutesConst.mapRoutes);
+    void onPressed() async {
+      if (_frmSignUpKey.currentState!.validate()) {
+        try {
+          // Criar o usuário no Firebase Authentication
+          UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+            email: _txbEmailController.text,
+            password: _txbPassController.text,
+          );
+
+          User? user = userCredential.user;
+
+          if (user != null) {
+            // Armazenar informações adicionais no Firebase Realtime Database
+            await _database.child('users/${user.uid}').set({
+              'username': _txbUsernameController.text,
+              'birthday': _txbBirthdayController.text,
+              'email': _txbEmailController.text,
+            });
+
+            // Redirecionar para a próxima tela
+            MapsRouteApp.navigatorKey.currentState
+              ?.pushReplacementNamed(RoutesConst.mapRoutes);
+          }
+        } on FirebaseAuthException catch (e) {
+          // Mostrar mensagem de erro se houver problema na criação do usuário
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.message ?? "Erro ao criar conta")),
+          );
+        }
+      }
     }
-    
+
     return DefaultButton("Entrar", ButtonStyleType.primary, onPressed);
   }
 }
