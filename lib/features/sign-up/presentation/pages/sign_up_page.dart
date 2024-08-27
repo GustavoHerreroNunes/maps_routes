@@ -126,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
             // Redirecionar para a próxima tela
             MapsRouteApp.navigatorKey.currentState
-              ?.pushReplacementNamed(RoutesConst.mapRoutes);
+              ?.pushReplacementNamed(RoutesConst.mapsActivity);
           }
         } on FirebaseAuthException catch (e) {
           // Mostrar mensagem de erro se houver problema na criação do usuário

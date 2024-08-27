@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:maps_route_app/features/maps-route/presentation/pages/maps_activity_page.dart';
 import 'firebase_options.dart';
 
 import 'package:maps_route_app/constants/routes_const.dart';
@@ -36,6 +37,7 @@ class MapsRouteApp extends StatelessWidget {
         RoutesConst.login : (context) => LoginPage(),
         RoutesConst.signup : (context) => SignUpPage(),
         RoutesConst.mapRoutes : (context) => MapsRoutePage(),
+        RoutesConst.mapsActivity : (context) => MapsActivity()
       },
     );
   }
