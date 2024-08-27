@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
 
               // Redirecionar para a tela de mapas
               MapsRouteApp.navigatorKey.currentState
-                ?.pushReplacementNamed(RoutesConst.mapsActivity);
+                ?.pushReplacementNamed(RoutesConst.mapRoutes);
             } else {
               // Se os dados não existirem, exiba uma mensagem de erro
               ScaffoldMessenger.of(context).showSnackBar(
