@@ -108,7 +108,7 @@ class _SignUpPageState extends State<SignUpPage> {
     void onPressed() async {
       if (_frmSignUpKey.currentState!.validate()) {
         try {
-          // Criar o usuário no Firebase Authentication
+
           UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
             email: _txbEmailController.text,
             password: _txbPassController.text,
@@ -117,7 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
           User? user = userCredential.user;
 
           if (user != null) {
-            // Armazenar informações adicionais no Firebase Realtime Database
+
             await _database.child('users/${user.uid}').set({
               'username': _txbUsernameController.text,
               'birthday': _txbBirthdayController.text,
@@ -126,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
             // Redirecionar para a próxima tela
             MapsRouteApp.navigatorKey.currentState
-              ?.pushReplacementNamed(RoutesConst.mapsActivity);
+              ?.pushReplacementNamed(RoutesConst.mapRoutes);
           }
         } on FirebaseAuthException catch (e) {
           // Mostrar mensagem de erro se houver problema na criação do usuário

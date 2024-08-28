@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoder2/geocoder2.dart';
+import 'package:maps_route_app/features/maps-route/utilities/coordinates_utilities.dart';
 import 'package:maps_route_app/features/widgets/default_button.dart';
 import 'package:maps_route_app/features/widgets/default_text_field_widget.dart';
 
@@ -27,6 +29,9 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
   );
 
   Set<Marker> _routeMarkers = Set();
+
+  final Set<Polyline>_polyline= {};
+  List<LatLng> latlng = [];
 
   @override
   void dispose() {
@@ -63,6 +68,7 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
   Widget _getMap() {
     return Expanded(
       child: GoogleMap(
+        polylines: _polyline,
         initialCameraPosition: _cameraPosition,
         mapType: MapType.normal,
         onMapCreated: (GoogleMapController controller) {
@@ -90,8 +96,32 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
   Widget _getBtnGo() {
     String label = "Go";
 
-    void onPressed() {
-      print("[btnGo] pressed");
+    void onPressed() async {
+    LatLng? origin = await getFromAddress(_txbOrigin.text.toString());
+    LatLng? destination = await getFromAddress(_txbDestination.text.toString());
+
+    print("[btnGo] pressed");
+    setState(() {
+      latlng = [
+        origin ?? const LatLng(-15.7801, -47.9292),
+        destination ?? const LatLng(-15.7801, -47.9292)
+      ];
+    });
+    setState(() {
+      _polyline.add(Polyline(
+          polylineId: PolylineId(latlng[0].toString()),
+          visible: true,
+
+          points: latlng,
+          color: Colors.blue,
+      ));
+    });
+    setState(() {
+      _cameraPosition = CameraPosition(
+        target: latlng[0],
+        zoom: 12
+      );
+    });
     }
 
     return DefaultButton(label, ButtonStyleType.primary, onPressed);
