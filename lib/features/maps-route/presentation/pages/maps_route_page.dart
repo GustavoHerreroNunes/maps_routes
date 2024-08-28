@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoder2/geocoder2.dart';
 import 'package:maps_route_app/features/maps-route/utilities/coordinates_utilities.dart';
@@ -18,6 +19,7 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
   final _frmRouteKey = GlobalKey<FormState>();
   final _txbDestination = TextEditingController();
   final _txbOrigin = TextEditingController();
+  GoogleMapController? _mapsController;
   
   List<LatLng> routePoints = [];
 
@@ -34,6 +36,12 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
   List<LatLng> latlng = [];
 
   @override
+  void initState() {
+    getPolyPoints();
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _txbDestination.dispose();
     _txbOrigin.dispose();
@@ -41,6 +49,51 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
     super.dispose();
   }
 
+
+  void getPolyPoints() async {
+    var sourceLocation = await getFromAddress(_txbOrigin.text.toString());
+    var destinationLoc = await getFromAddress(_txbDestination.text.toString());
+    var googleApiK = "AIzaSyCaGSPOPMcoqaomH24MkKiWXl--jy3S6Ow";
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      googleApiK,
+        PointLatLng(sourceLocation?.latitude ?? 0, sourceLocation?.longitude ?? 0),
+        PointLatLng(destinationLoc?.latitude ?? 0, destinationLoc?.longitude ?? 0),
+    );
+
+    if (result.points.isNotEmpty){
+      result.points.forEach((PointLatLng point) => routePoints.add(LatLng(point.latitude, point.longitude)));
+    }
+
+    setState(() {
+      _polyline.add(Polyline(
+        polylineId: PolylineId("route"),
+        visible: true,
+        points: routePoints,
+        color: Colors.blue,
+      ));
+    });
+
+    setState(() {
+      _routeMarkers = {Marker(
+        markerId: MarkerId("source"),
+        position: sourceLocation!,
+      ),
+        Marker(markerId: MarkerId("destination"),
+          position: destinationLoc!,
+        ),
+      };
+    });
+    _mapsController?.animateCamera(
+        CameraUpdate.newLatLngZoom(LatLng(sourceLocation?.latitude ?? 0, sourceLocation?.longitude ?? 0), 14));
+
+    /*setState(() {
+      _cameraPosition = CameraPosition(
+          target: .,
+          zoom: 12
+      );
+    });*/
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,8 +125,10 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
         initialCameraPosition: _cameraPosition,
         mapType: MapType.normal,
         onMapCreated: (GoogleMapController controller) {
+          _mapsController = controller;
           _completer.complete(controller);
         },
+
         markers: _routeMarkers,
       )
     );
@@ -97,31 +152,9 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
     String label = "Go";
 
     void onPressed() async {
-    LatLng? origin = await getFromAddress(_txbOrigin.text.toString());
-    LatLng? destination = await getFromAddress(_txbDestination.text.toString());
+       getPolyPoints();
 
-    print("[btnGo] pressed");
-    setState(() {
-      latlng = [
-        origin ?? const LatLng(-15.7801, -47.9292),
-        destination ?? const LatLng(-15.7801, -47.9292)
-      ];
-    });
-    setState(() {
-      _polyline.add(Polyline(
-          polylineId: PolylineId(latlng[0].toString()),
-          visible: true,
 
-          points: latlng,
-          color: Colors.blue,
-      ));
-    });
-    setState(() {
-      _cameraPosition = CameraPosition(
-        target: latlng[0],
-        zoom: 12
-      );
-    });
     }
 
     return DefaultButton(label, ButtonStyleType.primary, onPressed);
