@@ -67,4 +67,5 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://authentication-locomob-default-rtdb.firebaseio.com',
     storageBucket: 'authentication-locomob.appspot.com',
   );
+
 }
