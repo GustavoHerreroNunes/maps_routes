@@ -37,7 +37,7 @@ class MapsRouteApp extends StatelessWidget {
         RoutesConst.login : (context) => LoginPage(),
         RoutesConst.signup : (context) => SignUpPage(),
         RoutesConst.mapRoutes : (context) => MapsRoutePage(),
-        RoutesConst.mapsActivity : (context) => MapsActivity()
+      //  RoutesConst.mapsActivity : (context) => MapsActivity()
       },
     );
   }

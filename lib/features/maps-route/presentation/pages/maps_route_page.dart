@@ -111,7 +111,7 @@ class _MapsRoutePageState extends State<MapsRoutePage> {
       _polyline.add(Polyline(
           polylineId: PolylineId(latlng[0].toString()),
           visible: true,
-          //latlng is List<LatLng>
+
           points: latlng,
           color: Colors.blue,
       ));
